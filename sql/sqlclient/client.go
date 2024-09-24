@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/url"
 	"sync"
+	"strings"
 
 	"ariga.io/atlas/schemahcl"
 	"ariga.io/atlas/sql/migrate"
@@ -331,6 +332,9 @@ func OpenURL(ctx context.Context, u *url.URL, opts ...OpenOption) (*Client, erro
 	client, err := drv.Open(ctx, u)
 	if err != nil {
 		return nil, err
+	}
+	if strings.HasPrefix(client.Name, "libsql") {
+		client.Name = "sqlite3"
 	}
 	if client.URL == nil {
 		client.URL = drv.parser.ParseURL(u)
